@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NextFlow
 
-## Getting Started
+Initialized interview project for a Krea-inspired LLM workflow builder.
 
-First, run the development server:
+## What is already done
+
+- Next.js 16 + TypeScript + Tailwind scaffold
+- Core packages added for React Flow, Clerk, Prisma, Neon, Trigger.dev, Gemini, Transloadit, Zustand, Zod, and Lucide
+- Custom landing screen aligned to the provided screenshots
+- `.env.example` added for the required service keys
+- `prisma/schema.prisma` added as the starting database model
+- `PROMPT_CURSOR.md` added as a strict build prompt for Cursor or Antigravity
+
+## Folder
+
+The app was created in:
+
+`c:\Users\Harsh Gupta\Downloads\Demo\nextflow`
+
+`create-next-app` could not initialize directly in `Demo` because npm package names cannot contain capital letters.
+
+## Run
 
 ```bash
+cd c:\Users\Harsh Gupta\Downloads\Demo\nextflow
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Before building the full app
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Fill these values in `.env.local` using `.env.example`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Clerk keys
+- Neon PostgreSQL connection string
+- Gemini API key
+- Trigger.dev secret
+- Transloadit auth key and template ids
 
-## Learn More
+## Notes
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- All executable nodes in the final version must run through Trigger.dev, per the screenshots.
+- The current page is an initialization shell, not the full workflow engine yet.
+- Use `PROMPT_CURSOR.md` to hand the repo off to Cursor or Antigravity without drifting from the spec.

@@ -1,65 +1,68 @@
-import Image from "next/image";
+import { Bot, ExternalLink } from "lucide-react";
+import { AuthenticatedHome } from "@/components/home/AuthenticatedHome";
+import { hasClerkEnv } from "@/lib/clerk";
+
+function ClerkSetupNotice() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#f8f8f3_0%,#f4f1ea_35%,#ece7de_100%)] px-6 py-12">
+      <section className="w-full max-w-3xl rounded-[32px] border border-black/8 bg-white/88 p-8 shadow-[0_24px_90px_rgba(38,30,18,0.08)] backdrop-blur">
+        <div className="flex items-center gap-4">
+          <div className="flex size-14 items-center justify-center rounded-[20px] bg-[#1d1d1b] text-white">
+            <Bot className="size-7" />
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-black/45">
+              NextFlow
+            </p>
+            <h1 className="text-2xl font-semibold tracking-[-0.03em] text-[#1d1d1b]">
+              Clerk keys are still placeholders
+            </h1>
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-4 text-[15px] leading-7 text-black/70">
+          <p>
+            Your current <code>.env</code> contains placeholder values like
+            <code> pk_test_...</code> and <code>sk_test_...</code>. Clerk rejects those at
+            startup, which is why the app crashes with <code>Publishable key not valid</code>.
+          </p>
+          <p>Replace them with real keys from the Clerk dashboard, then restart <code>npm run dev</code>.</p>
+        </div>
+
+        <div className="mt-6 rounded-[24px] bg-[#f7f3eb] p-5 font-mono text-sm text-black/75">
+          <p>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_real_key</p>
+          <p>CLERK_SECRET_KEY=sk_test_your_real_key</p>
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <a
+            href="https://dashboard.clerk.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#5260f4] px-5 py-3 font-semibold text-white"
+          >
+            Open Clerk Dashboard
+            <ExternalLink className="size-4" />
+          </a>
+          <a
+            href="https://clerk.com/docs/quickstarts/nextjs"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-5 py-3 font-semibold text-black/70"
+          >
+            Setup Guide
+            <ExternalLink className="size-4" />
+          </a>
+        </div>
+      </section>
+    </main>
+  );
+}
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+  if (!hasClerkEnv) {
+    return <ClerkSetupNotice />;
+  }
+
+  return <AuthenticatedHome />;
 }
