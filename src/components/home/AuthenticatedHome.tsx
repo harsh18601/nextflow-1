@@ -82,7 +82,7 @@ export function AuthenticatedHome() {
                 Export JSON
               </button>
               <div className="mx-2 h-10 w-px bg-black/5" />
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             </div>
           )}
         </div>

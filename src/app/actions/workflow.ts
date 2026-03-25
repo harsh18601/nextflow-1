@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import type { Edge, Node } from "@xyflow/react";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { cropTask } from "@/trigger/crop";
 import { extractFrameTask } from "@/trigger/extractFrame";
 import { geminiTask } from "@/trigger/gemini";
@@ -39,6 +40,7 @@ export async function triggerExtractFrame(
 
 export async function saveWorkflow(name: string, nodes: Node[], edges: Edge[]) {
   const userId = await requireUser();
+  const definition = JSON.parse(JSON.stringify({ nodes, edges })) as Prisma.InputJsonValue;
 
   return prisma.workflow.upsert({
     where: { id: "current-workspace" },
@@ -46,11 +48,11 @@ export async function saveWorkflow(name: string, nodes: Node[], edges: Edge[]) {
       id: "current-workspace",
       name,
       userId,
-      definition: { nodes, edges },
+      definition,
     },
     update: {
       name,
-      definition: { nodes, edges },
+      definition,
     },
   });
 }

@@ -128,7 +128,7 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       }
     });
 
-    const payload = { ...(node.data as WorkflowNodeData), ...inputs };
+    const payload: Record<string, unknown> = { ...(node.data as WorkflowNodeData), ...inputs };
 
     try {
       let result: NodeExecutionResult;
@@ -139,13 +139,13 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
           result = (node.data as WorkflowNodeData).text;
           break;
         case "llm":
-          result = `[Gemini Response] based on "${String(payload.user_message ?? "")}" and inputs: ${JSON.stringify(inputs)}`;
+          result = `[Gemini Response] based on "${String(payload["user_message"] ?? "")}" and inputs: ${JSON.stringify(inputs)}`;
           break;
         case "crop":
-          result = `https://dummyimage.com/600x400/000/fff&text=Cropped+Image+from+${String(payload.image_url ?? "")}`;
+          result = `https://dummyimage.com/600x400/000/fff&text=Cropped+Image+from+${String(payload["image_url"] ?? "")}`;
           break;
         case "extractFrame":
-          result = `https://dummyimage.com/600x400/000/fff&text=Frame+at+${String(payload.timestamp ?? "")}`;
+          result = `https://dummyimage.com/600x400/000/fff&text=Frame+at+${String(payload["timestamp"] ?? "")}`;
           break;
         case "imageUpload":
           result = (node.data as WorkflowNodeData).imageUrl;
