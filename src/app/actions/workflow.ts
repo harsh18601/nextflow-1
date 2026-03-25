@@ -1,59 +1,56 @@
 "use server";
 
-import { geminiTask } from "@/trigger/gemini";
+import { auth } from "@clerk/nextjs/server";
+import type { Edge, Node } from "@xyflow/react";
+import { prisma } from "@/lib/prisma";
 import { cropTask } from "@/trigger/crop";
 import { extractFrameTask } from "@/trigger/extractFrame";
-import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
+import { geminiTask } from "@/trigger/gemini";
 
-export async function triggerLLM(payload: any) {
+interface TriggerTaskRun {
+  id: string;
+}
+
+async function requireUser() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
+  return userId;
+}
 
-  const run = await geminiTask.trigger(payload);
+export async function triggerLLM(payload: Parameters<typeof geminiTask.trigger>[0]) {
+  await requireUser();
+  const run = (await geminiTask.trigger(payload)) as TriggerTaskRun;
   return run.id;
 }
 
-export async function triggerCrop(payload: any) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const run = await cropTask.trigger(payload);
+export async function triggerCrop(payload: Parameters<typeof cropTask.trigger>[0]) {
+  await requireUser();
+  const run = (await cropTask.trigger(payload)) as TriggerTaskRun;
   return run.id;
 }
 
-export async function triggerExtractFrame(payload: any) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const run = await extractFrameTask.trigger(payload);
+export async function triggerExtractFrame(
+  payload: Parameters<typeof extractFrameTask.trigger>[0]
+) {
+  await requireUser();
+  const run = (await extractFrameTask.trigger(payload)) as TriggerTaskRun;
   return run.id;
 }
 
-// Polling or Webhook to get result? For simplicity 3s timeout for now or poll
-export async function getTaskResult(runId: string) {
-  // Use Trigger.dev runs.retrieve or similar
-  // return runs.retrieve(runId)
-  return { status: "COMPLETED", output: "Mocked output from server action" };
-}
+export async function saveWorkflow(name: string, nodes: Node[], edges: Edge[]) {
+  const userId = await requireUser();
 
-export async function saveWorkflow(name: string, nodes: any[], edges: any[]) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  return await prisma.workflow.upsert({
-    where: { id: "current-workspace" }, // Simplified for demo
+  return prisma.workflow.upsert({
+    where: { id: "current-workspace" },
     create: {
       id: "current-workspace",
       name,
       userId,
-      nodes: JSON.stringify(nodes),
-      edges: JSON.stringify(edges),
+      definition: { nodes, edges },
     },
     update: {
       name,
-      nodes: JSON.stringify(nodes),
-      edges: JSON.stringify(edges),
+      definition: { nodes, edges },
     },
   });
 }

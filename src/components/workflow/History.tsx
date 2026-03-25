@@ -97,8 +97,6 @@ export const History: React.FC = () => {
                 <span className="text-[10px] font-bold uppercase tracking-widest text-black/25">Scope: {item.scope}</span>
                 <div className="flex-1 h-px bg-black/5" />
               </div>
-
-              {/* Node Breakdown (Collapsed or summarized) */}
               <div className="mt-3 space-y-2">
                 {item.details?.slice(0, 1).map((detail, idx) => (
                   <div key={idx} className="flex flex-col gap-1 pl-2 border-l-2 border-black/5">
@@ -116,8 +114,6 @@ export const History: React.FC = () => {
           ))}
         </div>
       </section>
-
-      {/* Persistence Info */}
       <section className="rounded-[28px] border border-black/8 bg-[#f7f3eb] p-5 shadow-[0_18px_60px_rgba(38,30,18,0.08)]">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-[16px] bg-[#e9ecff] text-[#4b56de]">
@@ -132,3 +128,4 @@ export const History: React.FC = () => {
     </aside>
   );
 };
+

@@ -1,8 +1,8 @@
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
-import { useWorkflowStore } from "@/store/useWorkflowStore";
 import { LucideIcon, Play } from "lucide-react";
 import { clsx } from "clsx";
+import { useWorkflowStore } from "@/store/useWorkflowStore";
 
 interface NodeWrapperProps {
   id: string;
@@ -35,12 +35,11 @@ export const NodeWrapper: React.FC<NodeWrapperProps> = ({
         status === "running" && "animate-pulsate shadow-[0_0_20px_rgba(82,96,244,0.4)]"
       )}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div
             className={clsx(
-              "flex size-11 items-center justify-center rounded-[18px] text-white bg-gradient-to-br",
+              "flex size-11 items-center justify-center rounded-[18px] bg-gradient-to-br text-white",
               accentColor
             )}
           >
@@ -63,9 +62,9 @@ export const NodeWrapper: React.FC<NodeWrapperProps> = ({
               {status}
             </span>
           )}
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
               useWorkflowStore.getState().executeNode(id);
             }}
             disabled={status === "running"}
@@ -76,39 +75,36 @@ export const NodeWrapper: React.FC<NodeWrapperProps> = ({
         </div>
       </div>
 
-      {/* Inputs (Handles) */}
-      <div className="flex flex-col gap-4 mb-4">
-        {inputs.map((input, index) => (
-          <div key={input.id} className="relative flex items-center justify-start h-8 px-2 group">
+      <div className="mb-4 flex flex-col gap-4">
+        {inputs.map((input) => (
+          <div key={input.id} className="group relative flex h-8 items-center justify-start px-2">
             <Handle
               type="target"
               position={Position.Left}
               id={input.id}
-              className="!w-3 !h-3 !-left-6 !bg-[#5260f4] !border-2 !border-white shadow-sm"
+              className="!-left-6 !h-3 !w-3 !border-2 !border-white !bg-[#5260f4] shadow-sm"
               style={{ top: "50%" }}
             />
-            <span className="text-xs font-medium text-black/50 group-hover:text-black/80 transition-colors">
+            <span className="text-xs font-medium text-black/50 transition-colors group-hover:text-black/80">
               {input.label}
             </span>
           </div>
         ))}
       </div>
 
-      {/* Body */}
       <div className="flex flex-col gap-3">{children}</div>
 
-      {/* Outputs (Handles) */}
-      <div className="flex flex-col gap-4 mt-4">
-        {outputs.map((output, index) => (
-          <div key={output.id} className="relative flex items-center justify-end h-8 px-2 group">
-            <span className="text-xs font-medium text-black/50 group-hover:text-black/80 transition-colors">
+      <div className="mt-4 flex flex-col gap-4">
+        {outputs.map((output) => (
+          <div key={output.id} className="group relative flex h-8 items-center justify-end px-2">
+            <span className="text-xs font-medium text-black/50 transition-colors group-hover:text-black/80">
               {output.label}
             </span>
             <Handle
               type="source"
               position={Position.Right}
               id={output.id}
-              className="!w-3 !h-3 !-right-6 !bg-[#5260f4] !border-2 !border-white shadow-sm"
+              className="!-right-6 !h-3 !w-3 !border-2 !border-white !bg-[#5260f4] shadow-sm"
               style={{ top: "50%" }}
             />
           </div>

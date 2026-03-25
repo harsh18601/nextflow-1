@@ -1,25 +1,23 @@
 import { NodeProps } from "@xyflow/react";
 import { Crop } from "lucide-react";
-import { NodeWrapper } from "./NodeWrapper";
 import { WorkflowNodeData } from "@/store/useWorkflowStore";
+import { NodeWrapper } from "./NodeWrapper";
 
 export const CropImageNode: React.FC<NodeProps> = (props) => {
   const data = props.data as WorkflowNodeData;
   const { id, selected } = props;
 
-  const renderInput = (label: string, value: any, key: string) => (
+  const renderInput = (label: string, value: number | undefined, key: string) => (
     <div className="flex items-center justify-between gap-2 px-1">
       <span className="text-[10px] font-bold uppercase tracking-wider text-black/30">
         {label}
       </span>
       <input
         type="number"
-        className="w-16 h-8 rounded-[10px] border border-black/8 bg-[#f5f1ea] px-2 text-xs text-black/80 focus:outline-none focus:ring-1 focus:ring-[#5260f4]/50"
-        value={value || 0}
-        disabled={!!data.inputs?.[key]}
-        onChange={(e) => {
-          // Update node data
-        }}
+        className="h-8 w-16 rounded-[10px] border border-black/8 bg-[#f5f1ea] px-2 text-xs text-black/80 focus:outline-none focus:ring-1 focus:ring-[#5260f4]/50"
+        value={value ?? 0}
+        disabled={Boolean(data.inputs?.[key])}
+        onChange={() => {}}
       />
     </div>
   );
@@ -40,7 +38,7 @@ export const CropImageNode: React.FC<NodeProps> = (props) => {
       ]}
       outputs={[{ id: "output", label: "Cropped Image", type: "image" }]}
     >
-      <div className="flex flex-col gap-2 p-3 rounded-[20px] bg-[#f5f1ea]/50 border border-black/5">
+      <div className="flex flex-col gap-2 rounded-[20px] border border-black/5 bg-[#f5f1ea]/50 p-3">
         {renderInput("X %", data.x_percent, "x_percent")}
         {renderInput("Y %", data.y_percent, "y_percent")}
         {renderInput("Width %", data.width_percent, "width_percent")}

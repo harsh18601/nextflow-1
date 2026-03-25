@@ -1,16 +1,16 @@
 import { create } from "zustand";
 import {
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
   Connection,
   Edge,
   EdgeChange,
   Node,
   NodeChange,
-  addEdge,
-  OnNodesChange,
-  OnEdgesChange,
   OnConnect,
-  applyNodeChanges,
-  applyEdgeChanges,
+  OnEdgesChange,
+  OnNodesChange,
 } from "@xyflow/react";
 
 export type NodeType =
@@ -34,7 +34,7 @@ export interface WorkflowNodeData {
   width_percent?: number;
   height_percent?: number;
   timestamp?: string;
-  inputs?: Record<string, any>;
+  inputs?: Record<string, unknown>;
 }
 
 export interface WorkflowState {
@@ -52,23 +52,19 @@ export interface WorkflowState {
   updateNodeData: (nodeId: string, data: Partial<WorkflowNodeData>) => void;
 }
 
+type NodeExecutionResult = string | undefined;
+
 export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   nodes: [],
   edges: [],
   onNodesChange: (changes: NodeChange[]) => {
-    set({
-      nodes: applyNodeChanges(changes, get().nodes),
-    });
+    set({ nodes: applyNodeChanges(changes, get().nodes) });
   },
   onEdgesChange: (changes: EdgeChange[]) => {
-    set({
-      edges: applyEdgeChanges(changes, get().edges),
-    });
+    set({ edges: applyEdgeChanges(changes, get().edges) });
   },
   onConnect: (connection: Connection) => {
-    set({
-      edges: addEdge(connection, get().edges),
-    });
+    set({ edges: addEdge(connection, get().edges) });
   },
   setNodes: (nodes: Node[]) => set({ nodes }),
   setEdges: (edges: Edge[]) => set({ edges }),
@@ -80,6 +76,7 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       position: { x: Math.random() * 400, y: Math.random() * 400 },
       data: { label: `${type} node` },
     };
+
     set({ nodes: [...get().nodes, newNode] });
   },
   loadSampleWorkflow: () => {
@@ -114,62 +111,58 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
     });
   },
   executeNode: async (nodeId: string) => {
-    const node = get().nodes.find((n) => n.id === nodeId);
+    const node = get().nodes.find((item) => item.id === nodeId);
     if (!node) return;
 
-    // Set to running
     get().updateNodeData(nodeId, { status: "running" });
 
-    // Gather inputs from edges
-    const inputEdges = get().edges.filter((e) => e.target === nodeId);
-    const inputs: Record<string, any> = {};
-    
+    const inputEdges = get().edges.filter((edge) => edge.target === nodeId);
+    const inputs: Record<string, unknown> = {};
+
     inputEdges.forEach((edge) => {
-      const sourceNode = get().nodes.find((n) => n.id === edge.source);
-      if (sourceNode && sourceNode.data.output) {
-        inputs[edge.targetHandle!] = sourceNode.data.output;
+      const sourceNode = get().nodes.find((item) => item.id === edge.source);
+      const sourceData = sourceNode?.data as WorkflowNodeData | undefined;
+
+      if (sourceData?.output && edge.targetHandle) {
+        inputs[edge.targetHandle] = sourceData.output;
       }
     });
 
-    // Merge manual data with connected inputs
-    const payload = { ...node.data, ...inputs };
+    const payload = { ...(node.data as WorkflowNodeData), ...inputs };
 
     try {
-      let result;
-      // Mock execution if Trigger.dev is not fully set up
-      // In production, we'd use triggerLLM, triggerCrop, etc.
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
+      let result: NodeExecutionResult;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       switch (node.type) {
         case "text":
-          result = node.data.text;
+          result = (node.data as WorkflowNodeData).text;
           break;
         case "llm":
-          result = `[Gemini Response] based on "${payload.user_message}" and inputs: ${JSON.stringify(inputs)}`;
+          result = `[Gemini Response] based on "${String(payload.user_message ?? "")}" and inputs: ${JSON.stringify(inputs)}`;
           break;
         case "crop":
-          result = `https://dummyimage.com/600x400/000/fff&text=Cropped+Image+from+${payload.image_url}`;
+          result = `https://dummyimage.com/600x400/000/fff&text=Cropped+Image+from+${String(payload.image_url ?? "")}`;
           break;
         case "extractFrame":
-          result = `https://dummyimage.com/600x400/000/fff&text=Frame+at+${payload.timestamp}`;
+          result = `https://dummyimage.com/600x400/000/fff&text=Frame+at+${String(payload.timestamp ?? "")}`;
           break;
         case "imageUpload":
-          result = node.data.imageUrl;
+          result = (node.data as WorkflowNodeData).imageUrl;
           break;
         case "videoUpload":
-          result = node.data.videoUrl;
+          result = (node.data as WorkflowNodeData).videoUrl;
           break;
         default:
           result = "Success";
       }
 
-      get().updateNodeData(nodeId, { status: "success", output: result as string });
-    } catch (error) {
+      get().updateNodeData(nodeId, { status: "success", output: result ?? "" });
+    } catch {
       get().updateNodeData(nodeId, { status: "failed" });
     }
   },
   executeWorkflow: async () => {
-    // Basic DAG execution (could be more robust with topological sort)
     const executedNodes = new Set<string>();
     const nodesToExecute = [...get().nodes];
 
@@ -178,15 +171,14 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
         (node) =>
           !executedNodes.has(node.id) &&
           get().edges
-            .filter((e) => e.target === node.id)
-            .every((e) => executedNodes.has(e.source))
+            .filter((edge) => edge.target === node.id)
+            .every((edge) => executedNodes.has(edge.source))
       );
 
-      if (runnableNodes.length === 0) break; // Circular or stuck
+      if (runnableNodes.length === 0) break;
 
-      // Trigger all runnable nodes in parallel
       await Promise.all(runnableNodes.map((node) => get().executeNode(node.id)));
-      runnableNodes.forEach((n) => executedNodes.add(n.id));
+      runnableNodes.forEach((node) => executedNodes.add(node.id));
     }
   },
 }));

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -48,9 +48,7 @@ export const Canvas: React.FC = () => {
           ariaLabel="Workflow minimap"
           style={{ width: 160, height: 100 }}
         />
-        <Controls 
-          className="!bg-white !rounded-xl !border !border-black/5 !shadow-sm !left-4 !bottom-4" 
-        />
+        <Controls className="!bg-white !rounded-xl !border !border-black/5 !shadow-sm !left-4 !bottom-4" />
         
         <Panel position="top-right" className="flex gap-3">
           <div className="rounded-full bg-white/90 backdrop-blur px-4 py-2 text-sm font-medium text-black/65 shadow-sm border border-black/5">
@@ -61,3 +59,4 @@ export const Canvas: React.FC = () => {
     </div>
   );
 };
+

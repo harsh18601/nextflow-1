@@ -63,8 +63,6 @@ export const Sidebar: React.FC = () => {
           ))}
         </div>
       </section>
-
-      {/* Footer Area */}
       <section className="mt-6 pt-6 border-t border-black/5">
         <div className="rounded-[24px] border border-[#d8d0c3] bg-[#fffdf9]/50 p-4">
           <p className="text-[10px] font-bold uppercase tracking-wider text-black/30">
@@ -79,3 +77,4 @@ export const Sidebar: React.FC = () => {
     </aside>
   );
 };
+
